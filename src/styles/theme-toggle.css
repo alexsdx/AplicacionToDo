@@ -1,0 +1,31 @@
+/* --- Theme Toggle Styles --- */
+.header-top {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin-bottom: 0.5rem;
+}
+
+.app-title {
+    margin-bottom: 0; /* Override previous margin */
+}
+
+.btn-theme-toggle {
+    /* Removed absolute positioning to allow flex layout in header */
+    color: var(--text-muted);
+    padding: 8px;
+    border-radius: 50%;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.btn-theme-toggle:hover {
+    color: var(--color-primary);
+    background: var(--bg-gradient);
+    transform: rotate(15deg);
+}
