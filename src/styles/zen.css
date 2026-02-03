@@ -1,0 +1,103 @@
+/* Zen Mode Styles */
+.zen-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: var(--bg-gradient);
+    z-index: 3000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.5s ease;
+}
+
+.btn-exit-zen {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    color: var(--text-muted);
+    opacity: 0.5;
+    transition: opacity 0.3s;
+}
+
+.btn-exit-zen:hover {
+    opacity: 1;
+    color: var(--text-main);
+}
+
+.zen-content {
+    text-align: center;
+    max-width: 800px;
+    padding: 2rem;
+}
+
+.zen-subtitle {
+    font-size: 1rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+    display: block;
+}
+
+.zen-task-title {
+    font-size: 4rem;
+    font-weight: 900;
+    color: var(--text-main);
+    line-height: 1.1;
+    margin-bottom: 4rem;
+    animation: scaleUp 0.5s ease;
+}
+
+@media (max-width: 600px) {
+    .zen-task-title {
+        font-size: 2.5rem; /* Smaller title on mobile */
+        margin-bottom: 2rem;
+    }
+    
+    .btn-zen-complete {
+        padding: 1.5rem 3rem;
+        font-size: 1rem;
+    }
+    
+    .btn-exit-zen {
+        top: 1rem;
+        right: 1rem;
+    }
+}
+
+@keyframes scaleUp {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.zen-actions {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+}
+
+.btn-zen-complete {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    background: transparent;
+    border: 2px solid var(--color-primary);
+    color: var(--color-primary);
+    padding: 2rem 4rem;
+    border-radius: 20px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-zen-complete:hover {
+    background: var(--color-primary);
+    color: white;
+    transform: scale(1.05);
+    box-shadow: 0 10px 30px -10px var(--color-primary);
+}
