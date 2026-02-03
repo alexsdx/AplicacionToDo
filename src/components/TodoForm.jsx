@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus, Calendar, Briefcase, User, Home, Book, Repeat, Mic, MicOff, Keyboard } from 'lucide-react';
 
 export default function TodoForm({ onAdd }) {
@@ -8,7 +8,7 @@ export default function TodoForm({ onAdd }) {
     const [category, setCategory] = useState('personal');
     const [isHabit, setIsHabit] = useState(false);
     const [isListening, setIsListening] = useState(false);
-    const [showVoiceHelp, setShowVoiceHelp] = useState(false);
+    const [showShortcuts, setShowShortcuts] = useState(false);
 
     // Smart text parser for keyboard shortcuts
     const parseSmartText = (inputText) => {
@@ -57,27 +57,25 @@ export default function TodoForm({ onAdd }) {
     };
 
     const startListening = () => {
-        // Versión simplificada - como tu ejemplo
         try {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             
             if (!SpeechRecognition) {
-                alert('❌ Tu navegador no soporta reconocimiento de voz.\n\n💡 Usa atajos: "!!! tarea urgente #trabajo"');
-                setShowVoiceHelp(true);
+                setShowShortcuts(true);
                 return;
             }
 
             const recognition = new SpeechRecognition();
             recognition.lang = 'es-ES';
+            recognition.continuous = false;
+            recognition.interimResults = false;
             
             setIsListening(true);
 
             recognition.onresult = (event) => {
                 const transcript = event.results[0][0].transcript;
-                console.log('Texto reconocido:', transcript);
                 setText(transcript);
                 
-                // Auto-detectar urgencia y categoría
                 const lower = transcript.toLowerCase();
                 if (lower.includes('urgente') || lower.includes('importante')) {
                     setUrgency('high');
@@ -90,15 +88,10 @@ export default function TodoForm({ onAdd }) {
             };
 
             recognition.onerror = (event) => {
-                console.error('Error de voz:', event.error);
                 setIsListening(false);
-                
-                if (event.error === 'not-allowed') {
-                    alert('🔒 Permiso denegado.\n\n💡 ALTERNATIVA: Usa atajos de texto\nEjemplo: "!!! reunión #trabajo"');
-                    setShowVoiceHelp(true);
-                } else if (event.error !== 'no-speech' && event.error !== 'aborted') {
-                    alert(`Error: ${event.error}\n\n💡 Prueba los atajos de texto (clic en ⌨️)`);
-                    setShowVoiceHelp(true);
+                // Silently show shortcuts instead of alerts
+                if (event.error !== 'no-speech' && event.error !== 'aborted') {
+                    setShowShortcuts(true);
                 }
             };
 
@@ -109,10 +102,8 @@ export default function TodoForm({ onAdd }) {
             recognition.start();
             
         } catch (error) {
-            console.error('Error:', error);
             setIsListening(false);
-            alert('❌ Error al iniciar voz.\n\n💡 Alternativa: Escribe "!!! tarea #trabajo"\n(Clic en ⌨️ para ayuda)');
-            setShowVoiceHelp(true);
+            setShowShortcuts(true);
         }
     };
 
@@ -125,26 +116,19 @@ export default function TodoForm({ onAdd }) {
 
     return (
         <form onSubmit={handleSubmit} className="glass-card">
-            {showVoiceHelp && (
-                <div style={{ 
-                    background: 'var(--cat-personal-bg)', 
-                    padding: '1rem', 
-                    borderRadius: '8px', 
-                    marginBottom: '1rem',
-                    fontSize: '0.85rem',
-                    border: '1px solid var(--color-primary)'
-                }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+            {showShortcuts && (
+                <div className="shortcuts-panel">
+                    <div className="shortcuts-header">
                         <strong>⌨️ Atajos de Teclado</strong>
                         <button 
                             type="button" 
-                            onClick={() => setShowVoiceHelp(false)}
-                            style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer' }}
+                            onClick={() => setShowShortcuts(false)}
+                            className="btn-close-shortcuts"
                         >
                             ✕
                         </button>
                     </div>
-                    <div style={{ display: 'grid', gap: '0.5rem' }}>
+                    <div className="shortcuts-content">
                         <div><strong>Urgencia:</strong></div>
                         <div>• <code>!!!</code> = Alta → "!!! reunión importante"</div>
                         <div>• <code>!!</code> = Media → "!! revisar email"</div>
@@ -154,7 +138,7 @@ export default function TodoForm({ onAdd }) {
                         <div>• <code>#personal</code> o <code>#yo</code></div>
                         <div>• <code>#casa</code> o <code>#home</code></div>
                         <div>• <code>#estudio</code> o <code>#study</code></div>
-                        <div style={{ marginTop: '0.5rem', background: 'white', padding: '0.5rem', borderRadius: '4px' }}>
+                        <div className="shortcuts-example">
                             <strong>Ejemplo:</strong> <code>!!! terminar proyecto #trabajo</code>
                         </div>
                     </div>
@@ -174,9 +158,9 @@ export default function TodoForm({ onAdd }) {
                 <button
                     type="button"
                     className="btn-mic"
-                    onClick={() => setShowVoiceHelp(!showVoiceHelp)}
+                    onClick={() => setShowShortcuts(!showShortcuts)}
                     title="Atajos de teclado"
-                    style={{ background: showVoiceHelp ? 'var(--cat-personal-bg)' : 'transparent' }}
+                    style={{ background: showShortcuts ? 'var(--cat-personal-bg)' : 'transparent' }}
                 >
                     <Keyboard size={18} />
                 </button>

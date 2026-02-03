@@ -13,6 +13,7 @@ import CalendarView from './components/CalendarView';
 import ZenModeOverlay from './components/ZenModeOverlay';
 import { Palette, Calendar as CalendarIcon, List, Eye } from 'lucide-react';
 import { useRef } from 'react';
+import { triggerConfetti } from './utils/confetti';
 
 function App() {
   // Theme State
@@ -30,9 +31,8 @@ function App() {
 
   const [isStoreOpen, setIsStoreOpen] = useState(false);
   const [isZenMode, setIsZenMode] = useState(false);
-  const [viewMode, setViewMode] = useState('list'); // 'list' | 'calendar'
+  const [viewMode, setViewMode] = useState('list');
 
-  // Apply theme to body
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
@@ -45,17 +45,14 @@ function App() {
   // Keyboard Shortcuts
   useEffect(() => {
       const handleKeyDown = (e) => {
-          // Ctrl/Cmd + K -> Focus Search
           if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
               e.preventDefault();
               searchInputRef.current?.focus();
           }
-          // Escape -> Close things
           if (e.key === 'Escape') {
               setIsStoreOpen(false);
               setSearchQuery('');
               setActivePomodoroTask(null);
-              // setViewMode('list'); // Optional
           }
       };
 
@@ -68,15 +65,12 @@ function App() {
   }, [unlockedThemes]);
 
   const toggleTheme = () => {
-    // Simple toggle between light/dark, or cycle if basic
-    // But now we have a store, so maybe this button just opens the store?
-    // Let's keep it as a quick toggle for light/dark for convenience
     setTheme(prev => prev === 'light' ? 'dark' : 'light');
   };
 
   const handleBuyTheme = (themeId, price) => {
       if (userProfile.xp >= price) {
-          addXp(-price); // Dedcut XP
+          addXp(-price);
           setUnlockedThemes([...unlockedThemes, themeId]);
       }
   };
@@ -86,17 +80,14 @@ function App() {
       setIsStoreOpen(false);
   };
   
-  // Load initial state from LocalStorage or empty array
   const [todos, setTodos] = useState(() => {
     const saved = localStorage.getItem('premium-todos');
     let parsedTodos = saved ? JSON.parse(saved) : [];
     
-    // Check for habits reset
     const today = new Date().toISOString().split('T')[0];
     const lastLogin = localStorage.getItem('last-login-date');
     
     if (lastLogin !== today) {
-        // Reset habits for new day
         parsedTodos = parsedTodos.map(t => {
             if (t.isHabit) {
                 return { ...t, completed: false };
@@ -109,12 +100,11 @@ function App() {
     return parsedTodos;
   });
 
-  const [sortBy, setSortBy] = useState('manual'); // 'manual' | 'urgency' | 'time'
+  const [sortBy, setSortBy] = useState('manual');
   const [activePomodoroTask, setActivePomodoroTask] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const searchInputRef = useRef(null);
   
-  // Gamification State
   const [userProfile, setUserProfile] = useState(() => {
     const saved = localStorage.getItem('todo-profile');
     return saved ? JSON.parse(saved) : { level: 1, xp: 0, nextLevelXp: 100 };
@@ -133,15 +123,15 @@ function App() {
       if (newXp >= newNextXp) {
         newLevel += 1;
         newXp = newXp - newNextXp;
-        newNextXp = Math.floor(newNextXp * 1.5); // Increase difficulty
-        // Could trigger a "Level Up" modal here
+        newNextXp = Math.floor(newNextXp * 1.5);
+        // Trigger confetti on level up!
+        setTimeout(() => triggerConfetti(), 100);
       }
 
       return { level: newLevel, xp: newXp, nextLevelXp: newNextXp };
     });
   };
 
-  // Sensors for Drag & Drop
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -161,7 +151,6 @@ function App() {
     }
   };
 
-  // Save to LocalStorage whenever todos change
   useEffect(() => {
     localStorage.setItem('premium-todos', JSON.stringify(todos));
   }, [todos]);
@@ -170,11 +159,11 @@ function App() {
     const newTodo = {
       id: crypto.randomUUID(),
       text,
-      urgency, // 'high', 'medium', 'low'
-      dueDate, // YYYY-MM-DD string or null
-      category: category || 'personal', // 'work', 'personal', 'home', 'study'
-      isHabit, // Boolean
-      subtasks: [], // Array of { id, text, completed }
+      urgency,
+      dueDate,
+      category: category || 'personal',
+      isHabit,
+      subtasks: [],
       completed: false,
       createdAt: Date.now()
     };
@@ -185,8 +174,13 @@ function App() {
     setTodos(todos.map(todo => {
       if (todo.id === id) {
         const isCompleting = !todo.completed;
-        if (isCompleting) addXp(50); // +50 XP for task completion
-        else addXp(-10); // Penalty for unchecking? Or just 0. Let's do small penalty to prevent spam.
+        if (isCompleting) {
+          addXp(50);
+          // Trigger confetti on task completion!
+          setTimeout(() => triggerConfetti(), 100);
+        } else {
+          addXp(-10);
+        }
         return { ...todo, completed: isCompleting };
       }
       return todo;
@@ -196,14 +190,17 @@ function App() {
   const handleCompleteFromPomodoro = (id) => {
     setTodos(todos.map(todo => {
       if (todo.id === id) {
-        if (!todo.completed) addXp(100); // Bonus +100 XP for Pomodoro finish!
+        if (!todo.completed) {
+          addXp(100);
+          // Big confetti for pomodoro completion!
+          setTimeout(() => triggerConfetti(), 100);
+        }
         return { ...todo, completed: true };
       }
       return todo;
     }));
   };
 
-  // Subtask Handlers
   const addSubtask = (todoId, text) => {
     setTodos(todos.map(todo => {
       if (todo.id !== todoId) return todo;
@@ -222,13 +219,11 @@ function App() {
       const updatedSubtasks = todo.subtasks.map(st => {
         if (st.id === subtaskId) {
             const isCompleting = !st.completed;
-            if (isCompleting) addXp(10); // +10 XP per subtask
+            if (isCompleting) addXp(10);
             return { ...st, completed: isCompleting };
         }
         return st;
       });
-      // Optional: Auto-complete parent task if all subtasks are done? 
-      // Let's keep it manual for now.
       return { ...todo, subtasks: updatedSubtasks };
     }));
   };
@@ -258,36 +253,29 @@ function App() {
     setTodos([]);
   };
 
-  // Sorting Logic
   const getSortedTodos = () => {
-    // Filter first by search query
     let filtered = todos;
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
       filtered = todos.filter(t => t.text.toLowerCase().includes(query));
     }
 
-    // If manual sort is active, return raw list (drag & drop order)
     if (sortBy === 'manual') return filtered;
 
     const urgencyWeight = { high: 3, medium: 2, low: 1 };
 
     return [...filtered].sort((a, b) => {
-      // First, move completed items to bottom
       if (a.completed !== b.completed) return a.completed ? 1 : -1;
 
-      // Then sort by selected criteria
       if (sortBy === 'urgency') {
         const diff = urgencyWeight[b.urgency] - urgencyWeight[a.urgency];
         if (diff !== 0) return diff;
       } else if (sortBy === 'time') {
-        // Sort by Due Date (Earliest first)
         if (a.dueDate && b.dueDate) return a.dueDate.localeCompare(b.dueDate);
-        if (a.dueDate) return -1; // Items with due date come first
+        if (a.dueDate) return -1;
         if (b.dueDate) return 1;
       }
 
-      // Fallback to creation date (newest first)
       return b.createdAt - a.createdAt;
     });
   };
@@ -295,24 +283,23 @@ function App() {
   return (
     <div className="container">
       <header className="app-header">
-        <div className="header-top">
-          <h1 className="app-title">Mi Agenda</h1>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <button onClick={() => setIsZenMode(true)} className="btn-theme-toggle" style={{ position: 'relative', transform: 'none', top: 'auto', right: 'auto' }} title="Modo Zen (Enfoque)">
-                <Eye size={20} />
-            </button>
-            <button onClick={() => setViewMode(viewMode === 'list' ? 'calendar' : 'list')} className="btn-theme-toggle" style={{ position: 'relative', transform: 'none', top: 'auto', right: 'auto' }} title={viewMode === 'list' ? "Ver Calendario" : "Ver Lista"}>
-                {viewMode === 'list' ? <CalendarIcon size={20} /> : <List size={20} />}
-            </button>
-            <button onClick={() => setIsStoreOpen(true)} className="btn-theme-toggle" style={{ position: 'relative', transform: 'none', top: 'auto', right: 'auto' }} title="Tienda de Temas">
-                <Palette size={20} />
-            </button>
-            <button onClick={toggleTheme} className="btn-theme-toggle" style={{ position: 'relative', transform: 'none', top: 'auto', right: 'auto' }} title="Cambiar modo (Rápido)">
-                {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
-            </button>
-          </div>
+        <h1 className="app-title">Mi Agenda</h1>
+        <p style={{ color: 'var(--text-muted)', marginBottom: '1rem' }}>Organiza tu día con estilo</p>
+        
+        <div className="header-actions">
+          <button onClick={() => setIsZenMode(true)} className="btn-theme-toggle" title="Modo Zen (Enfoque)">
+              <Eye size={20} />
+          </button>
+          <button onClick={() => setViewMode(viewMode === 'list' ? 'calendar' : 'list')} className="btn-theme-toggle" title={viewMode === 'list' ? "Ver Calendario" : "Ver Lista"}>
+              {viewMode === 'list' ? <CalendarIcon size={20} /> : <List size={20} />}
+          </button>
+          <button onClick={() => setIsStoreOpen(true)} className="btn-theme-toggle" title="Tienda de Temas">
+              <Palette size={20} />
+          </button>
+          <button onClick={toggleTheme} className="btn-theme-toggle" title="Cambiar modo (Rápido)">
+              {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+          </button>
         </div>
-        <p style={{ color: 'var(--text-muted)' }}>Organiza tu día con estilo</p>
       </header>
 
       <ThemeStore 
@@ -329,7 +316,6 @@ function App() {
             todos={todos} 
             onComplete={(id) => {
                 toggleTodo(id);
-                // Maybe stay in Zen mode for next task?
             }}
             onExit={() => setIsZenMode(false)}
           />
@@ -422,7 +408,7 @@ function App() {
           onComplete={handleCompleteFromPomodoro}
         />
       )}
-    </div >
+    </div>
   );
 }
 
