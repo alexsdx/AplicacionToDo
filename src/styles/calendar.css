@@ -1,0 +1,77 @@
+/* Calendar View Styles */
+.calendar-container {
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    animation: fadeIn 0.3s ease;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.month-title {
+    text-transform: capitalize;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+}
+
+.calendar-day-header {
+    text-align: center;
+    font-weight: 700;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    margin-bottom: 8px;
+}
+
+.calendar-day {
+    aspect-ratio: 1;
+    border-radius: 8px;
+    background: var(--input-bg, rgba(255,255,255,0.1));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+}
+
+.calendar-day:hover {
+    background: var(--glass-bg);
+    border-color: var(--color-primary);
+}
+
+.calendar-day.today {
+    background: var(--cat-personal-bg);
+    border-color: var(--color-primary);
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+.day-number {
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+}
+
+.day-dots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    justify-content: center;
+}
+
+.task-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+}

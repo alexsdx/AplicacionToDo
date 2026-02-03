@@ -1,54 +1,86 @@
-# 📝 Mi Agenda To-Do Premium
+# 🚀 Mi Agenda To-Do Premium: Ultimate Edition
 
-Una aplicación web moderna y elegante para gestionar tus tareas diarias, diseñada con un enfoque en la estética (Glassmorphism) y la eficiencia.
+Una suite de productividad moderna, gamificada y potente. Diseñada con **Glassmorphism**, construida con **React + Vite**, y cargada con funciones avanzadas para llevar tu organización al siguiente nivel.
 
 ![Preview](./CapturaAplicacion.png)
 
+---
 
 ## ✨ Características Principales
 
-*   **Gestión de Tareas**: Agrega, completa y elimina tareas con facilidad.
-*   **Niveles de Urgencia**: Clasifica tus pendientes como **Alta** (Rojo), **Media** (Ámbar) o **Baja** (Verde).
-*   **Barra de Progreso**: Visualiza tu avance con una barra animada y porcentaje de tareas completadas.
-*   **Persistencia de Datos**: Tus tareas se guardan automáticamente en tu navegador (LocalStorage), por lo que no perderás nada si cierras la ventana.
-*   **Ordenamiento Inteligente**:
-    *   📅 **Por Fecha**: Orden cronológico de creación.
-    *   ⚠️ **Por Urgencia**: Prioriza automáticamente lo más importante.
-*   **Acciones Masivas**: Botones rápidos para eliminar tareas completadas o limpiar toda la lista.
-*   **Diseño Responsivo**: Interfaz totalmente adaptada para funcionar cómodamente en celulares y tablets.
-*   **Diseño Premium**: Interfaz visual con efectos de vidrio esmerilado, animaciones suaves y tipografía moderna.
+### 🛠️ Productividad Pura
+*   **Gestión de Tareas y Subtareas**: Divide tareas grandes en checklists manejables.
+*   **Fechas de Vencimiento**: Alertas visuales para tareas de hoy, mañana o vencidas.
+*   **Categorías**: Etiquetas visuales para Trabajo, Personal, Casa y Estudio.
+*   **Buscador en Tiempo Real**: Filtra tus pendientes instantáneamente (`Ctrl+K`).
+*   **Papelera y Limpieza**: Herramientas para mantener tu lista limpia.
 
-## 🚀 Cómo Usar la Aplicación
+### 🎮 Gamificación (RPG)
+¡Convierte tu trabajo en un juego!
+*   **Sistema de XP**: Gana experiencia por completar tareas (+50 XP) y subtareas (+10 XP).
+*   **Niveles**: Sube de nivel conforme avanzas.
+*   **Tienda de Temas**: Gasta tus XP ganados para desbloquear nuevos diseños visuales.
+*   **Perfil de Usuario**: Visualiza tu progreso, nivel y barra de experiencia.
+
+### 🧠 Enfoque y Bienestar
+*   **🍅 Modo Pomodoro**: Temporizador integrado de 25 minutos para enfoque profundo.
+*   **🧘 Modo Zen**: Oculta todo el ruido y muestra solo tu tarea más prioritaria.
+*   **🔁 Hábitos Diarios**: Tareas que se regeneran automáticamente cada día.
+
+### 🎨 Diseño y Personalización
+*   **Temas Desbloqueables**:
+    *   🔵 **Clásico** (Gratis)
+    *   🌑 **Modo Noche** (Gratis)
+    *   🌲 **Bosque Zen** (500 XP)
+    *   🔮 **Cyberpunk** (1000 XP)
+*   **Modo Oscuro/Claro**: Cambio rápido desde el encabezado.
+*   **Drag & Drop**: Reordena tus tareas manualmente arrastrándolas.
+*   **Vista de Calendario**: Visualiza tu mes y la carga de trabajo por día.
+
+### 🎤 Control por Voz (IA)
+Usa el botón de micrófono 🎙️ para dictar tareas. La app detecta palabras clave automáticamente:
+*   *"Comprar leche **urgente**"* -> Marca prioridad **Alta**.
+*   *"Enviar correo de **trabajo**"* -> Asigna categoría **Trabajo**.
+
+---
+
+## ⌨️ Atajos de Teclado (Power User)
+
+| Tecla | Acción |
+| :--- | :--- |
+| `Ctrl` + `K` | Enfocar la barra de búsqueda |
+| `Esc` | Cerrar modales (Tienda, Zen) o limpiar búsqueda |
+
+---
+
+## 🚀 Cómo Ejecutar el Proyecto
 
 ### Requisitos Previos
 *   Tener instalado **Node.js** en tu computadora.
 
-### Instrucciones de Ejecución
+### Pasos
 1.  Abre una terminal en la carpeta del proyecto.
-2.  Instala las dependencias (solo la primera vez):
+2.  Instala las dependencias:
     ```bash
     npm install
     ```
-3.  Inicia el servidor de desarrollo:
+3.  Inicia la aplicación:
     ```bash
     npm run dev
     ```
-4.  Abre el enlace que aparece en la terminal (usualmente `http://127.0.0.1:5173/`).
-
-## 🛠️ Tecnologías y Construcción
-
-Esta aplicación fue construida utilizando las herramientas más modernas del desarrollo web:
-
-*   **[React](https://react.dev/)**: Librería principal para construir la interfaz de usuario interactiva y manejar el estado de la aplicación.
-*   **[Vite](https://vitejs.dev/)**: Herramienta de compilación ultrarrápida que reemplaza a Webpack.
-*   **Vanilla CSS + Variables**: Estilos personalizados sin frameworks pesados, utilizando variables CSS modernas para una paleta de colores consistente y efectos de `backdrop-filter` (Glassmorphism).
-*   **[Lucide React](https://lucide.dev/)**: Colección de iconos vectoriales ligeros y limpios.
-*   **LocalStorage API**: Para el almacenamiento de datos persistente en el cliente.
-
-### Estructura del Proyecto
-*   `src/components`: Contiene los bloques de construcción (`TodoForm`, `TodoList`, `TodoItem`).
-*   `src/styles`: Archivos CSS modulares (`app.css` para layout, `variables.css` para el tema).
-*   `src/App.jsx`: El componente principal que contiene la lógica de negocio (CRUD, ordenamiento).
+4.  Abre `http://localhost:5173/` en tu navegador.
 
 ---
-Desarrollado por Alejandro Estrada Padilla.
+
+## 🛠️ Tecnologías Utilizadas
+
+*   **React 19**: Core del frontend.
+*   **Vite**: Build tool ultrarrápido.
+*   **@dnd-kit**: Librería profesional para Drag & Drop.
+*   **Lucide React**: Iconografía moderna.
+*   **Web Speech API**: Reconocimiento de voz nativo.
+*   **LocalStorage**: Persistencia de datos compleja (perfil, temas, tareas).
+*   **CSS Variables**: Sistema de temas dinámico y mantenible.
+
+---
+*Desarrollado con ❤️ para máxima productividad.*
