@@ -9,6 +9,7 @@ Una aplicación web moderna y elegante para gestionar tus tareas diarias, diseñ
 
 *   **Gestión de Tareas**: Agrega, completa y elimina tareas con facilidad.
 *   **Niveles de Urgencia**: Clasifica tus pendientes como **Alta** (Rojo), **Media** (Ámbar) o **Baja** (Verde).
+*   **Barra de Progreso**: Visualiza tu avance con una barra animada y porcentaje de tareas completadas.
 *   **Persistencia de Datos**: Tus tareas se guardan automáticamente en tu navegador (LocalStorage), por lo que no perderás nada si cierras la ventana.
 *   **Ordenamiento Inteligente**:
     *   📅 **Por Fecha**: Orden cronológico de creación.

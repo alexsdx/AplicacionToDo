@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { LayoutList, ArrowUpDown, Trash2, CheckCircle2 } from 'lucide-react';
 import TodoForm from './components/TodoForm';
 import TodoList from './components/TodoList';
+import ProgressBar from './components/ProgressBar';
 
 function App() {
   // Load initial state from LocalStorage or empty array
@@ -71,6 +72,8 @@ function App() {
         <h1 className="app-title">Mi Agenda</h1>
         <p style={{ color: 'var(--text-muted)' }}>Organiza tu día con estilo</p>
       </header>
+
+      <ProgressBar todos={todos} />
 
       <TodoForm onAdd={addTodo} />
 
