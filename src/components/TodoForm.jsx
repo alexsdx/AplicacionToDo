@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Plus, Calendar, Briefcase, User, Home, Book, Repeat, Mic, MicOff, Keyboard } from 'lucide-react';
+import { useState } from 'react';
+import { Plus, Calendar, Briefcase, User, Home, Book, Repeat, Keyboard } from 'lucide-react';
 
 export default function TodoForm({ onAdd }) {
     const [text, setText] = useState('');
@@ -7,7 +7,6 @@ export default function TodoForm({ onAdd }) {
     const [dueDate, setDueDate] = useState('');
     const [category, setCategory] = useState('personal');
     const [isHabit, setIsHabit] = useState(false);
-    const [isListening, setIsListening] = useState(false);
     const [showShortcuts, setShowShortcuts] = useState(false);
 
     // Smart text parser for keyboard shortcuts
@@ -56,57 +55,6 @@ export default function TodoForm({ onAdd }) {
         setIsHabit(false);
     };
 
-    const startListening = () => {
-        try {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            
-            if (!SpeechRecognition) {
-                setShowShortcuts(true);
-                return;
-            }
-
-            const recognition = new SpeechRecognition();
-            recognition.lang = 'es-ES';
-            recognition.continuous = false;
-            recognition.interimResults = false;
-            
-            setIsListening(true);
-
-            recognition.onresult = (event) => {
-                const transcript = event.results[0][0].transcript;
-                setText(transcript);
-                
-                const lower = transcript.toLowerCase();
-                if (lower.includes('urgente') || lower.includes('importante')) {
-                    setUrgency('high');
-                }
-                if (lower.includes('trabajo')) setCategory('work');
-                else if (lower.includes('casa')) setCategory('home');
-                else if (lower.includes('estudio')) setCategory('study');
-                
-                setIsListening(false);
-            };
-
-            recognition.onerror = (event) => {
-                setIsListening(false);
-                // Silently show shortcuts instead of alerts
-                if (event.error !== 'no-speech' && event.error !== 'aborted') {
-                    setShowShortcuts(true);
-                }
-            };
-
-            recognition.onend = () => {
-                setIsListening(false);
-            };
-
-            recognition.start();
-            
-        } catch (error) {
-            setIsListening(false);
-            setShowShortcuts(true);
-        }
-    };
-
     const categories = [
         { id: 'personal', icon: User, label: 'Personal' },
         { id: 'work', icon: Briefcase, label: 'Trabajo' },
@@ -146,15 +94,6 @@ export default function TodoForm({ onAdd }) {
             )}
 
             <div className="input-group">
-                <button
-                    type="button"
-                    className={`btn-mic ${isListening ? 'listening' : ''}`}
-                    onClick={startListening}
-                    title="Dictar por voz"
-                >
-                    {isListening ? <MicOff size={18} /> : <Mic size={18} />}
-                </button>
-
                 <button
                     type="button"
                     className="btn-mic"
