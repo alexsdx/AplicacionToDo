@@ -15,6 +15,7 @@ Una aplicación web moderna y elegante para gestionar tus tareas diarias, diseñ
     *   📅 **Por Fecha**: Orden cronológico de creación.
     *   ⚠️ **Por Urgencia**: Prioriza automáticamente lo más importante.
 *   **Acciones Masivas**: Botones rápidos para eliminar tareas completadas o limpiar toda la lista.
+*   **Diseño Responsivo**: Interfaz totalmente adaptada para funcionar cómodamente en celulares y tablets.
 *   **Diseño Premium**: Interfaz visual con efectos de vidrio esmerilado, animaciones suaves y tipografía moderna.
 
 ## 🚀 Cómo Usar la Aplicación

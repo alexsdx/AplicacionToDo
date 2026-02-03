@@ -282,3 +282,59 @@ select {
     text-align: right;
     margin-top: 2px;
 }
+
+/* Mobile Responsiveness */
+@media (max-width: 640px) {
+    .container {
+        padding: 20px 16px;
+        gap: 1.5rem;
+    }
+
+    .app-title {
+        font-size: 2rem;
+    }
+
+    /* Stack form elements on mobile for easy typing */
+    .input-group {
+        flex-direction: column;
+        gap: 12px;
+        padding: 12px;
+    }
+
+    .todo-input {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        /* Prevents iOS zooom */
+    }
+
+    .select-urgency {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+    }
+
+    .btn-add {
+        width: 100%;
+        justify-content: center;
+        padding: 12px;
+        font-size: 16px;
+    }
+
+    /* Stack controls/buttons */
+    .controls {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .btn-sort {
+        flex: 1 1 auto;
+        justify-content: center;
+        padding: 10px;
+        min-width: 120px;
+    }
+
+    .glass-card {
+        padding: 1.5rem;
+    }
+}
