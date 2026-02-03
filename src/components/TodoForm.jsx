@@ -22,12 +22,15 @@ export default function TodoForm({ onAdd }) {
     };
 
     const startListening = () => {
-        if (!('webkitSpeechRecognition' in window)) {
-            alert('Tu navegador no soporta reconocimiento de voz. Prueba con Chrome.');
+        // Support for standard SpeechRecognition or webkitSpeechRecognition
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+        if (!SpeechRecognition) {
+            alert('Tu navegador no soporta reconocimiento de voz. Por favor usa Google Chrome, Edge o Safari (con prefijo webkit).');
             return;
         }
 
-        const recognition = new window.webkitSpeechRecognition();
+        const recognition = new SpeechRecognition();
         recognition.lang = 'es-ES';
         recognition.continuous = false;
         recognition.interimResults = false;
@@ -35,32 +38,46 @@ export default function TodoForm({ onAdd }) {
         setIsListening(true);
 
         recognition.onresult = (event) => {
-            const transcript = event.results[0][0].transcript;
-            setText(transcript);
-            
-            // Smart detection
-            const lowerText = transcript.toLowerCase();
-            if (lowerText.includes('urgente') || lowerText.includes('importante')) {
-                setUrgency('high');
-            } else if (lowerText.includes('trabajo')) {
-                setCategory('work');
-            } else if (lowerText.includes('casa')) {
-                setCategory('home');
+            // Check if results exist
+            if (event.results && event.results[0]) {
+                const transcript = event.results[0][0].transcript;
+                setText(transcript);
+                
+                // Smart detection
+                const lowerText = transcript.toLowerCase();
+                if (lowerText.includes('urgente') || lowerText.includes('importante')) {
+                    setUrgency('high');
+                } else if (lowerText.includes('trabajo')) {
+                    setCategory('work');
+                } else if (lowerText.includes('casa')) {
+                    setCategory('home');
+                }
             }
-
             setIsListening(false);
         };
 
         recognition.onerror = (event) => {
-            console.error(event.error);
+            console.error("Error de reconocimiento de voz:", event.error);
             setIsListening(false);
+            if (event.error === 'not-allowed') {
+                alert('Permiso de micrófono denegado. Por favor permítelo en tu navegador.');
+            } else if (event.error === 'no-speech') {
+                // Ignore silent errors
+            } else {
+                alert(`Error de voz: ${event.error}`);
+            }
         };
 
         recognition.onend = () => {
             setIsListening(false);
         };
 
-        recognition.start();
+        try {
+            recognition.start();
+        } catch (e) {
+            console.error("Error al iniciar el reconocimiento:", e);
+            setIsListening(false);
+        }
     };
 
     const categories = [

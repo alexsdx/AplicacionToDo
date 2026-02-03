@@ -1,5 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import './index.css' /* Importante: Reset primero */
 import './styles/variables.css'
 import './styles/app.css'
 import './styles/theme-toggle.css'
