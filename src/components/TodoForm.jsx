@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Calendar, Briefcase, User, Home, Book, Repeat, Mic, MicOff } from 'lucide-react';
+import { Plus, Calendar, Briefcase, User, Home, Book, Repeat, Mic, MicOff, Keyboard } from 'lucide-react';
 
 export default function TodoForm({ onAdd }) {
     const [text, setText] = useState('');
@@ -8,12 +8,47 @@ export default function TodoForm({ onAdd }) {
     const [category, setCategory] = useState('personal');
     const [isHabit, setIsHabit] = useState(false);
     const [isListening, setIsListening] = useState(false);
+    const [showVoiceHelp, setShowVoiceHelp] = useState(false);
+
+    // Smart text parser for keyboard shortcuts
+    const parseSmartText = (inputText) => {
+        const lowerText = inputText.toLowerCase();
+        let parsedUrgency = urgency;
+        let parsedCategory = category;
+
+        if (lowerText.includes('!!!') || lowerText.includes('urgente') || lowerText.includes('importante')) {
+            parsedUrgency = 'high';
+        } else if (lowerText.includes('!!') || lowerText.includes('pronto')) {
+            parsedUrgency = 'medium';
+        } else if (lowerText.includes('!') || lowerText.includes('tranquilo') || lowerText.includes('después')) {
+            parsedUrgency = 'low';
+        }
+
+        if (lowerText.includes('#trabajo') || lowerText.includes('#work')) {
+            parsedCategory = 'work';
+        } else if (lowerText.includes('#personal') || lowerText.includes('#yo')) {
+            parsedCategory = 'personal';
+        } else if (lowerText.includes('#casa') || lowerText.includes('#home')) {
+            parsedCategory = 'home';
+        } else if (lowerText.includes('#estudio') || lowerText.includes('#study')) {
+            parsedCategory = 'study';
+        }
+
+        const cleanedText = inputText
+            .replace(/!!!|!!|!/g, '')
+            .replace(/#trabajo|#work|#personal|#yo|#casa|#home|#estudio|#study/gi, '')
+            .trim();
+
+        return { text: cleanedText, urgency: parsedUrgency, category: parsedCategory };
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
         if (!text.trim()) return;
 
-        onAdd(text, urgency, dueDate, category, isHabit);
+        const parsed = parseSmartText(text);
+        
+        onAdd(parsed.text, parsed.urgency, dueDate, parsed.category, isHabit);
         setText('');
         setUrgency('medium');
         setDueDate('');
@@ -22,118 +57,62 @@ export default function TodoForm({ onAdd }) {
     };
 
     const startListening = () => {
-        // Check for HTTPS requirement (except localhost)
-        const isSecureContext = window.isSecureContext;
-        const isLocalhost = window.location.hostname === 'localhost' || 
-                           window.location.hostname === '127.0.0.1' ||
-                           window.location.hostname === '';
-
-        if (!isSecureContext && !isLocalhost) {
-            alert('⚠️ El reconocimiento de voz requiere HTTPS. Por favor usa una conexión segura.');
-            console.error('Voice recognition requires HTTPS in production');
-            return;
-        }
-
-        // Support for standard SpeechRecognition or webkitSpeechRecognition
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-        if (!SpeechRecognition) {
-            alert('❌ Tu navegador no soporta reconocimiento de voz.\n\n✅ Navegadores compatibles:\n• Google Chrome\n• Microsoft Edge\n• Safari (iOS 14.5+)');
-            console.error('SpeechRecognition API not supported in this browser');
-            return;
-        }
-
-        const recognition = new SpeechRecognition();
-        recognition.lang = 'es-ES'; // Spanish
-        recognition.continuous = false;
-        recognition.interimResults = false;
-        recognition.maxAlternatives = 1;
-
-        setIsListening(true);
-        console.log('🎤 Iniciando reconocimiento de voz...');
-
-        recognition.onstart = () => {
-            console.log('🎤 Reconocimiento de voz activado. Habla ahora...');
-        };
-
-        recognition.onresult = (event) => {
-            console.log('✅ Resultado recibido:', event);
+        // Versión simplificada - como tu ejemplo
+        try {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             
-            // Check if results exist
-            if (event.results && event.results[0]) {
+            if (!SpeechRecognition) {
+                alert('❌ Tu navegador no soporta reconocimiento de voz.\n\n💡 Usa atajos: "!!! tarea urgente #trabajo"');
+                setShowVoiceHelp(true);
+                return;
+            }
+
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'es-ES';
+            
+            setIsListening(true);
+
+            recognition.onresult = (event) => {
                 const transcript = event.results[0][0].transcript;
-                const confidence = event.results[0][0].confidence;
-                
-                console.log(`📝 Transcripción: "${transcript}" (confianza: ${(confidence * 100).toFixed(1)}%)`);
+                console.log('Texto reconocido:', transcript);
                 setText(transcript);
                 
-                // Smart detection of urgency and category
-                const lowerText = transcript.toLowerCase();
-                if (lowerText.includes('urgente') || lowerText.includes('importante') || lowerText.includes('ahora')) {
+                // Auto-detectar urgencia y categoría
+                const lower = transcript.toLowerCase();
+                if (lower.includes('urgente') || lower.includes('importante')) {
                     setUrgency('high');
-                    console.log('⚡ Detectada urgencia ALTA');
-                } else if (lowerText.includes('tranquilo') || lowerText.includes('después')) {
-                    setUrgency('low');
-                    console.log('🌊 Detectada urgencia BAJA');
                 }
+                if (lower.includes('trabajo')) setCategory('work');
+                else if (lower.includes('casa')) setCategory('home');
+                else if (lower.includes('estudio')) setCategory('study');
                 
-                if (lowerText.includes('trabajo') || lowerText.includes('oficina')) {
-                    setCategory('work');
-                    console.log('💼 Categoría: Trabajo');
-                } else if (lowerText.includes('casa') || lowerText.includes('hogar')) {
-                    setCategory('home');
-                    console.log('🏠 Categoría: Casa');
-                } else if (lowerText.includes('estudio') || lowerText.includes('tarea')) {
-                    setCategory('study');
-                    console.log('📚 Categoría: Estudio');
+                setIsListening(false);
+            };
+
+            recognition.onerror = (event) => {
+                console.error('Error de voz:', event.error);
+                setIsListening(false);
+                
+                if (event.error === 'not-allowed') {
+                    alert('🔒 Permiso denegado.\n\n💡 ALTERNATIVA: Usa atajos de texto\nEjemplo: "!!! reunión #trabajo"');
+                    setShowVoiceHelp(true);
+                } else if (event.error !== 'no-speech' && event.error !== 'aborted') {
+                    alert(`Error: ${event.error}\n\n💡 Prueba los atajos de texto (clic en ⌨️)`);
+                    setShowVoiceHelp(true);
                 }
-            }
-            setIsListening(false);
-        };
+            };
 
-        recognition.onerror = (event) => {
-            console.error('❌ Error de reconocimiento de voz:', event.error, event);
-            setIsListening(false);
-            
-            let errorMessage = '❌ Error de reconocimiento de voz: ';
-            
-            switch(event.error) {
-                case 'not-allowed':
-                    errorMessage += 'Permiso de micrófono denegado.\n\n🔧 Solución:\n1. Haz clic en el ícono del candado en la barra de direcciones\n2. Permite el acceso al micrófono\n3. Recarga la página';
-                    break;
-                case 'no-speech':
-                    console.log('⚠️ No se detectó voz. Intentando nuevamente...');
-                    return; // Don't show alert for this
-                case 'audio-capture':
-                    errorMessage += 'No se pudo capturar audio.\n\n🔧 Verifica:\n• Tu micrófono está conectado\n• Otra aplicación no está usando el micrófono';
-                    break;
-                case 'network':
-                    errorMessage += 'Error de red.\n\n🔧 Verifica tu conexión a internet';
-                    break;
-                case 'aborted':
-                    console.log('ℹ️ Reconocimiento de voz cancelado');
-                    return; // Don't show alert
-                case 'service-not-allowed':
-                    errorMessage += 'Servicio no disponible.\n\n🔧 Asegúrate de estar usando HTTPS (o localhost)';
-                    break;
-                default:
-                    errorMessage += `${event.error}\n\nIntenta nuevamente o usa Chrome/Edge.`;
-            }
-            
-            alert(errorMessage);
-        };
+            recognition.onend = () => {
+                setIsListening(false);
+            };
 
-        recognition.onend = () => {
-            console.log('🎤 Reconocimiento de voz finalizado');
-            setIsListening(false);
-        };
-
-        try {
             recognition.start();
-        } catch (e) {
-            console.error('❌ Error al iniciar el reconocimiento:', e);
+            
+        } catch (error) {
+            console.error('Error:', error);
             setIsListening(false);
-            alert('❌ No se pudo iniciar el reconocimiento de voz.\n\n' + e.message);
+            alert('❌ Error al iniciar voz.\n\n💡 Alternativa: Escribe "!!! tarea #trabajo"\n(Clic en ⌨️ para ayuda)');
+            setShowVoiceHelp(true);
         }
     };
 
@@ -146,26 +125,72 @@ export default function TodoForm({ onAdd }) {
 
     return (
         <form onSubmit={handleSubmit} className="glass-card">
+            {showVoiceHelp && (
+                <div style={{ 
+                    background: 'var(--cat-personal-bg)', 
+                    padding: '1rem', 
+                    borderRadius: '8px', 
+                    marginBottom: '1rem',
+                    fontSize: '0.85rem',
+                    border: '1px solid var(--color-primary)'
+                }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                        <strong>⌨️ Atajos de Teclado</strong>
+                        <button 
+                            type="button" 
+                            onClick={() => setShowVoiceHelp(false)}
+                            style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer' }}
+                        >
+                            ✕
+                        </button>
+                    </div>
+                    <div style={{ display: 'grid', gap: '0.5rem' }}>
+                        <div><strong>Urgencia:</strong></div>
+                        <div>• <code>!!!</code> = Alta → "!!! reunión importante"</div>
+                        <div>• <code>!!</code> = Media → "!! revisar email"</div>
+                        <div>• <code>!</code> = Baja → "! comprar pan"</div>
+                        <div style={{ marginTop: '0.5rem' }}><strong>Categoría:</strong></div>
+                        <div>• <code>#trabajo</code> o <code>#work</code></div>
+                        <div>• <code>#personal</code> o <code>#yo</code></div>
+                        <div>• <code>#casa</code> o <code>#home</code></div>
+                        <div>• <code>#estudio</code> o <code>#study</code></div>
+                        <div style={{ marginTop: '0.5rem', background: 'white', padding: '0.5rem', borderRadius: '4px' }}>
+                            <strong>Ejemplo:</strong> <code>!!! terminar proyecto #trabajo</code>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div className="input-group">
                 <button
                     type="button"
                     className={`btn-mic ${isListening ? 'listening' : ''}`}
                     onClick={startListening}
-                    title="Dictar tarea por voz (requiere HTTPS en producción)"
+                    title="Dictar por voz"
                 >
                     {isListening ? <MicOff size={18} /> : <Mic size={18} />}
+                </button>
+
+                <button
+                    type="button"
+                    className="btn-mic"
+                    onClick={() => setShowVoiceHelp(!showVoiceHelp)}
+                    title="Atajos de teclado"
+                    style={{ background: showVoiceHelp ? 'var(--cat-personal-bg)' : 'transparent' }}
+                >
+                    <Keyboard size={18} />
                 </button>
 
                 <input
                     type="text"
                     className="todo-input"
-                    placeholder="¿Qué necesitas hacer hoy?"
+                    placeholder="Tarea... (Prueba: !!! urgente #trabajo)"
                     value={text}
                     onChange={(e) => setText(e.target.value)}
                     autoFocus
                 />
 
-                <div className="date-input-wrapper" title="Fecha de vencimiento">
+                <div className="date-input-wrapper" title="Fecha">
                     <Calendar size={18} className="calendar-icon" />
                     <input
                         type="date"
@@ -193,7 +218,7 @@ export default function TodoForm({ onAdd }) {
                     type="button"
                     className={`btn-habit ${isHabit ? 'active' : ''}`}
                     onClick={() => setIsHabit(!isHabit)}
-                    title="Hábito diario (se repite)"
+                    title="Hábito diario"
                 >
                     <Repeat size={18} />
                 </button>
