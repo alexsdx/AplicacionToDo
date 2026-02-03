@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './styles/variables.css' /* Variables PRIMERO */
 import './index.css' /* Reset y base styles */
+import './styles/layout.css' /* Layout y componentes core */
 import './styles/app.css'
 import './styles/theme-toggle.css'
 import './styles/habits.css'
