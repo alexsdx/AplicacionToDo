@@ -52,6 +52,23 @@
     animation: scaleUp 0.5s ease;
 }
 
+@media (max-width: 600px) {
+    .zen-task-title {
+        font-size: 2.5rem; /* Smaller title on mobile */
+        margin-bottom: 2rem;
+    }
+    
+    .btn-zen-complete {
+        padding: 1.5rem 3rem;
+        font-size: 1rem;
+    }
+    
+    .btn-exit-zen {
+        top: 1rem;
+        right: 1rem;
+    }
+}
+
 @keyframes scaleUp {
     from { transform: scale(0.9); opacity: 0; }
     to { transform: scale(1); opacity: 1; }

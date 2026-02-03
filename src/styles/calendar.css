@@ -24,6 +24,31 @@
     gap: 8px;
 }
 
+@media (max-width: 480px) {
+    .calendar-container {
+        padding: 1rem;
+    }
+    
+    .calendar-grid {
+        gap: 4px;
+    }
+    
+    .calendar-day {
+        border-radius: 6px;
+        padding: 2px;
+        height: 50px; /* Fixed height for consistency */
+    }
+    
+    .day-number {
+        font-size: 0.8rem;
+    }
+    
+    .task-dot {
+        width: 4px;
+        height: 4px;
+    }
+}
+
 .calendar-day-header {
     text-align: center;
     font-weight: 700;
