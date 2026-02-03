@@ -1,0 +1,258 @@
+/* Layout \u0026 Core Component Styles */
+
+.container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 1rem 0.5rem;
+  }
+}
+
+/* Glass Morphism Card */
+.glass-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--glass-shadow);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  backdrop-filter: blur(10px);
+  transition: all var(--transition-smooth);
+}
+
+.glass-card:hover {
+  box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+/* App Header */
+.app-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.app-title {
+  font-size: 2.5rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.5rem;
+  letter-spacing: -1px;
+}
+
+/* Input Group (TodoForm) */
+.input-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 600px) {
+  .input-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.todo-input {
+  flex: 1;
+  min-width: 200px;
+  padding: 12px 16px;
+  border: 2px solid transparent;
+  border-radius: var(--radius-sm);
+  background: var(--input-bg, rgba(255, 255, 255, 0.5));
+  color: var(--text-main);
+  font-size: 1rem;
+  font-family: var(--font-family);
+  transition: all var(--transition-fast);
+  outline: none;
+}
+
+.todo-input:focus {
+  border-color: var(--color-primary);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.todo-input::placeholder {
+  color: var(--text-muted);
+}
+
+/* Date Input */
+.date-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--input-bg, rgba(255, 255, 255, 0.5));
+  border-radius: var(--radius-sm);
+  padding: 0 10px;
+  border: 2px solid transparent;
+  transition: border-color var(--transition-fast);
+}
+
+.date-input-wrapper:focus-within {
+  border-color: var(--color-primary);
+}
+
+.calendar-icon {
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.date-input {
+  border: none;
+  background: transparent;
+  padding: 8px;
+  color: var(--text-main);
+  font-size: 0.9rem;
+  outline: none;
+  font-family: var(--font-family);
+  cursor: pointer;
+}
+
+.date-input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+/* Select Inputs */
+.select-wrapper {
+  position: relative;
+}
+
+.select-category,
+.select-urgency {
+  padding: 10px 12px;
+  border: 2px solid transparent;
+  border-radius: var(--radius-sm);
+  background: var(--input-bg, rgba(255, 255, 255, 0.5));
+  color: var(--text-main);
+  font-size: 0.9rem;
+  font-family: var(--font-family);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  outline: none;
+  appearance: none;
+  min-width: 100px;
+}
+
+.select-category:hover,
+.select-urgency:hover {
+  border-color: var(--color-primary);
+}
+
+.select-category:focus,
+.select-urgency:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.select-urgency {
+  font-weight: 700;
+}
+
+.select-urgency option[value="high"] {
+  color: var(--urgency-high);
+}
+
+.select-urgency option[value="medium"] {
+  color: var(--urgency-medium);
+}
+
+.select-urgency option[value="low"] {
+  color: var(--urgency-low);
+}
+
+/* Add Button */
+.btn-add {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 24px;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+}
+
+.btn-add:hover {
+  background: var(--color-primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+}
+
+.btn-add:active {
+  transform: translateY(0);
+}
+
+/* Controls Bar */
+.controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 600px) {
+  .controls {
+    justify-content: center;
+  }
+}
+
+.btn-sort {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-sort:hover {
+  background: var(--glass-bg);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.btn-sort.active {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease;
+}

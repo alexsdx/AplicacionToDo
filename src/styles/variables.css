@@ -36,6 +36,16 @@
   /* Emerald 500 */
   --urgency-low-bg: #d1fae5;
 
+  /* Category Colors */
+  --cat-work: #8b5cf6; /* Violet */
+  --cat-work-bg: #ede9fe;
+  --cat-personal: #3b82f6; /* Blue */
+  --cat-personal-bg: #dbeafe;
+  --cat-home: #ec4899; /* Pink */
+  --cat-home-bg: #fce7f3;
+  --cat-study: #f59e0b; /* Amber */
+  --cat-study-bg: #fef3c7;
+
   /* Spacing & Radius */
   --radius-sm: 8px;
   --radius-md: 16px;
@@ -47,6 +57,72 @@
   /* Transitions */
   --transition-fast: 0.2s ease;
   --transition-smooth: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme='dark'] {
+  /* Dark Mode Palette */
+  --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  --glass-bg: rgba(30, 41, 59, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-inverted: #0f172a;
+
+  /* Adjust Urgency Backgrounds for Dark Mode to be readable */
+  --urgency-high-bg: rgba(239, 68, 68, 0.2);
+  --urgency-medium-bg: rgba(245, 158, 11, 0.2);
+  --urgency-low-bg: rgba(16, 185, 129, 0.2);
+
+  /* Form Elements */
+  --input-bg: rgba(255, 255, 255, 0.05);
+  --input-border: rgba(255, 255, 255, 0.1);
+
+  /* Dark Mode Categories */
+  --cat-work-bg: rgba(139, 92, 246, 0.2);
+  --cat-personal-bg: rgba(59, 130, 246, 0.2);
+  --cat-home-bg: rgba(236, 72, 153, 0.2);
+  --cat-study-bg: rgba(245, 158, 11, 0.2);
+}
+
+/* --- THEMES (Store Unlockables) --- */
+
+/* CYBERPUNK THEME */
+[data-theme='cyberpunk'] {
+  --color-primary: #f472b6; /* Neon Pink */
+  --color-primary-hover: #ec4899;
+  --color-secondary: #22d3ee; /* Cyan */
+  
+  --bg-gradient: linear-gradient(135deg, #09090b 0%, #271a3e 100%);
+  --glass-bg: rgba(20, 20, 30, 0.8);
+  --glass-border: rgba(244, 114, 182, 0.3); /* Pink border */
+  --glass-shadow: 0 0 15px rgba(244, 114, 182, 0.2);
+  
+  --text-main: #e2e8f0;
+  --text-muted: #94a3b8;
+  
+  --input-bg: rgba(0, 0, 0, 0.5);
+  --input-border: #f472b6;
+  
+  --font-family: 'Courier New', Courier, monospace; /* Tech font */
+}
+
+/* FOREST THEME */
+[data-theme='forest'] {
+  --color-primary: #059669; /* Green 600 */
+  --color-primary-hover: #047857;
+  --color-secondary: #84cc16; /* Lime */
+  
+  --bg-gradient: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: #86efac;
+  
+  --text-main: #064e3b;
+  --text-muted: #3f6212;
+  
+  --input-bg: #f0fdf4;
+  --input-border: #86efac;
 }
 
 body {
