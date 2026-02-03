@@ -1,7 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import './index.css' /* Importante: Reset primero */
-import './styles/variables.css'
+import './styles/variables.css' /* Variables PRIMERO */
+import './index.css' /* Reset y base styles */
 import './styles/app.css'
 import './styles/theme-toggle.css'
 import './styles/habits.css'
