@@ -10,7 +10,8 @@ Una aplicación web moderna y elegante para gestionar tus tareas diarias, diseñ
 *   **Gestión de Tareas**: Agrega, completa y elimina tareas con facilidad.
 *   **Niveles de Urgencia**: Clasifica tus pendientes como **Alta** (Rojo), **Media** (Ámbar) o **Baja** (Verde).
 *   **Barra de Progreso**: Visualiza tu avance con una barra animada y porcentaje de tareas completadas.
-*   **Persistencia de Datos**: Tus tareas se guardan automáticamente en tu navegador (LocalStorage), por lo que no perderás nada si cierras la ventana.
+*   **Persistencia en la Nube**: Tus tareas se guardan en **Supabase**, permitiendo sincronización real entre todos tus dispositivos.
+*   **Autenticación Segura**: Sistema de inicio de sesión privado con "Link Mágico" al correo electrónico.
 *   **Ordenamiento Inteligente**:
     *   📅 **Por Fecha**: Orden cronológico de creación.
     *   ⚠️ **Por Urgencia**: Prioriza automáticamente lo más importante.
@@ -22,6 +23,7 @@ Una aplicación web moderna y elegante para gestionar tus tareas diarias, diseñ
 
 ### Requisitos Previos
 *   Tener instalado **Node.js** en tu computadora.
+*   Un archivo `.env` configurado con tus credenciales de Supabase (URL y Anon Key).
 
 ### Instrucciones de Ejecución
 1.  Abre una terminal en la carpeta del proyecto.
@@ -43,7 +45,7 @@ Esta aplicación fue construida utilizando las herramientas más modernas del de
 *   **[Vite](https://vitejs.dev/)**: Herramienta de compilación ultrarrápida que reemplaza a Webpack.
 *   **Vanilla CSS + Variables**: Estilos personalizados sin frameworks pesados, utilizando variables CSS modernas para una paleta de colores consistente y efectos de `backdrop-filter` (Glassmorphism).
 *   **[Lucide React](https://lucide.dev/)**: Colección de iconos vectoriales ligeros y limpios.
-*   **LocalStorage API**: Para el almacenamiento de datos persistente en el cliente.
+*   **[Supabase](https://supabase.com/)**: Backend as a Service (BaaS) para base de datos en tiempo real y autenticación.
 
 ### Estructura del Proyecto
 *   `src/components`: Contiene los bloques de construcción (`TodoForm`, `TodoList`, `TodoItem`).

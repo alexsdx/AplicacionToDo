@@ -1,76 +1,126 @@
 import { useState, useEffect } from 'react';
-import { LayoutList, ArrowUpDown, Trash2, CheckCircle2 } from 'lucide-react';
+import { LayoutList, ArrowUpDown, Trash2, CheckCircle2, LogOut } from 'lucide-react';
+import { supabase } from './supabaseClient';
 import TodoForm from './components/TodoForm';
 import TodoList from './components/TodoList';
 import ProgressBar from './components/ProgressBar';
+import Auth from './components/Auth';
 
 function App() {
-  // Load initial state from LocalStorage or empty array
-  const [todos, setTodos] = useState(() => {
-    const saved = localStorage.getItem('premium-todos');
-    return saved ? JSON.parse(saved) : [];
-  });
-
+  const [session, setSession] = useState(null)
+  const [todos, setTodos] = useState([]);
   const [sortBy, setSortBy] = useState('urgency'); // 'urgency' | 'time'
 
-  // Save to LocalStorage whenever todos change
+  // 1. Manage Session State
   useEffect(() => {
-    localStorage.setItem('premium-todos', JSON.stringify(todos));
-  }, [todos]);
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session)
+    })
 
-  const addTodo = (text, urgency) => {
-    const newTodo = {
-      id: crypto.randomUUID(),
-      text,
-      urgency, // 'high', 'medium', 'low'
-      completed: false,
-      createdAt: Date.now()
-    };
-    setTodos([newTodo, ...todos]);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
+
+  // 2. Fetch Todos when user login
+  useEffect(() => {
+    if (session) {
+      fetchTodos()
+    }
+  }, [session])
+
+  const fetchTodos = async () => {
+    const { data, error } = await supabase
+      .from('todos')
+      .select('*')
+      .order('created_at', { ascending: false })
+
+    if (!error && data) setTodos(data)
+  }
+
+  const addTodo = async (text, urgency) => {
+    const { data, error } = await supabase
+      .from('todos')
+      .insert([{ text, urgency, completed: false, user_id: session.user.id }])
+      .select()
+
+    if (!error && data) {
+      setTodos([data[0], ...todos])
+    }
   };
 
-  const toggleTodo = (id) => {
-    setTodos(todos.map(todo =>
-      todo.id === id ? { ...todo, completed: !todo.completed } : todo
-    ));
+  const toggleTodo = async (id) => {
+    const todo = todos.find(t => t.id === id)
+    const { error } = await supabase
+      .from('todos')
+      .update({ completed: !todo.completed })
+      .eq('id', id)
+
+    if (!error) {
+      setTodos(todos.map(t =>
+        t.id === id ? { ...t, completed: !t.completed } : t
+      ));
+    }
   };
 
-  const deleteTodo = (id) => {
-    setTodos(todos.filter(todo => todo.id !== id));
+  const deleteTodo = async (id) => {
+    const { error } = await supabase.from('todos').delete().eq('id', id)
+    if (!error) {
+      setTodos(todos.filter(t => t.id !== id));
+    }
   };
 
-  const deleteCompleted = () => {
-    setTodos(todos.filter(todo => !todo.completed));
+  const deleteCompleted = async () => {
+    const { error } = await supabase.from('todos').delete().eq('completed', true)
+    if (!error) {
+      setTodos(todos.filter(t => !t.completed));
+    }
   };
 
-  const deleteAll = () => {
-    setTodos([]);
+  const deleteAll = async () => {
+    const { error } = await supabase.from('todos').delete().neq('id', '00000000-0000-0000-0000-000000000000') // Create complex filter to delete all
+    if (!error) {
+      setTodos([]);
+    }
   };
 
-  // Sorting Logic
+  // Sorting Logic (Client side sorting is fine for small lists)
   const getSortedTodos = () => {
     const urgencyWeight = { high: 3, medium: 2, low: 1 };
 
     return [...todos].sort((a, b) => {
-      // First, move completed items to bottom
       if (a.completed !== b.completed) return a.completed ? 1 : -1;
 
-      // Then sort by selected criteria
       if (sortBy === 'urgency') {
         const diff = urgencyWeight[b.urgency] - urgencyWeight[a.urgency];
         if (diff !== 0) return diff;
       }
 
-      // Fallback to creation date (newest first)
-      return b.createdAt - a.createdAt;
+      // Use string comparison for timestamps if needed, or Date
+      return new Date(b.created_at) - new Date(a.created_at);
     });
   };
+
+  if (!session) {
+    return <Auth />
+  }
 
   return (
     <div className="container">
       <header className="app-header">
         <h1 className="app-title">Mi Agenda</h1>
-        <p style={{ color: 'var(--text-muted)' }}>Organiza tu día con estilo</p>
+        <p style={{ color: 'var(--text-muted)' }}>
+          Nube: {session.user.email}
+          <button
+            onClick={() => supabase.auth.signOut()}
+            style={{ marginLeft: '10px', verticalAlign: 'middle', color: 'var(--urgency-high)' }}
+            title="Cerrar Sessión"
+          >
+            <LogOut size={16} />
+          </button>
+        </p>
       </header>
 
       <ProgressBar todos={todos} />
