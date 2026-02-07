@@ -9,14 +9,16 @@ Una aplicación web moderna y elegante para gestionar tus tareas diarias, diseñ
 
 *   **Gestión de Tareas**: Agrega, completa y elimina tareas con facilidad.
 *   **Niveles de Urgencia**: Clasifica tus pendientes como **Alta** (Rojo), **Media** (Ámbar) o **Baja** (Verde).
-*   **Barra de Progreso**: Visualiza tu avance con una barra animada y porcentaje de tareas completadas.
 *   **Persistencia en la Nube**: Tus tareas se guardan en **Supabase**, permitiendo sincronización real entre todos tus dispositivos.
+*   **Diseño Dashboard**: Interfaz de "Panel de Control" con barra lateral fija y lista scrolleable, optimizada para productividad.
 *   **Autenticación Segura**: Sistema de inicio de sesión privado con "Link Mágico" al correo electrónico.
 *   **Ordenamiento Inteligente**:
     *   📅 **Por Fecha**: Orden cronológico de creación.
     *   ⚠️ **Por Urgencia**: Prioriza automáticamente lo más importante.
 *   **Acciones Masivas**: Botones rápidos para eliminar tareas completadas o limpiar toda la lista.
-*   **Diseño Responsivo**: Interfaz totalmente adaptada para funcionar cómodamente en celulares y tablets.
+*   **Diseño Responsivo Inteligente**:
+    *   🖥️ **Desktop**: Vista dividida (Sidebar + Lista).
+    *   📱 **Móvil**: Vista apilada con controles "Sticky" (siempre a la mano).
 *   **Diseño Premium**: Interfaz visual con efectos de vidrio esmerilado, animaciones suaves y tipografía moderna.
 
 ## 🚀 Cómo Usar la Aplicación

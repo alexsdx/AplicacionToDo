@@ -3,6 +3,22 @@
     box-sizing: border-box;
 }
 
+:root {
+    --header-height: 80px;
+    --sidebar-width: 350px;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    overflow: hidden;
+    /* Prevent body scroll */
+    background: var(--bg-gradient);
+    font-family: 'Inter', sans-serif;
+    color: var(--text-main);
+}
+
 h1,
 h2,
 h3,
@@ -24,34 +40,36 @@ select {
     outline: none;
 }
 
-/* Layout Utilities */
-.container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 40px 20px;
+/* Dashboard Layout */
+.dashboard-layout {
+    display: flex;
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+}
+
+/* Sidebar (Left Panel) */
+.sidebar {
+    width: var(--sidebar-width);
+    min-width: var(--sidebar-width);
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-right: 1px solid var(--glass-border);
+    padding: 2rem;
     display: flex;
     flex-direction: column;
     gap: 2rem;
+    z-index: 10;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.05);
 }
 
-/* Glass Card */
-.glass-card {
-    background: var(--glass-bg);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow);
-    border-radius: var(--radius-md);
-    padding: 2rem;
-}
-
-/* Header */
 .app-header {
-    text-align: center;
+    text-align: left;
 }
 
 .app-title {
-    font-size: 2.5rem;
+    font-size: 2rem;
     font-weight: 800;
     background: linear-gradient(to right, var(--color-primary), var(--color-secondary));
     -webkit-background-clip: text;
@@ -60,51 +78,47 @@ select {
     margin-bottom: 0.5rem;
 }
 
-/* Form Styles */
+/* Form Styles (Sidebar) */
 .input-group {
     display: flex;
+    flex-direction: column;
     gap: 12px;
     background: #fff;
-    padding: 8px;
-    border-radius: var(--radius-sm);
+    padding: 16px;
+    border-radius: var(--radius-md);
     border: 1px solid #e2e8f0;
-    transition: var(--transition-fast);
-}
-
-.input-group:focus-within {
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .todo-input {
-    flex: 1;
-    border: none;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
     font-size: 1rem;
-    padding: 8px;
-    min-width: 0;
+    padding: 10px;
+    width: 100%;
 }
 
 .select-urgency {
-    border: none;
-    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
     border-radius: 6px;
-    padding: 0 12px;
-    font-size: 0.9rem;
-    color: var(--text-muted);
-    font-weight: 500;
+    padding: 10px;
+    width: 100%;
     cursor: pointer;
 }
 
 .btn-add {
     background: var(--color-primary);
     color: white;
-    padding: 0 24px;
+    padding: 12px;
     border-radius: 6px;
     font-weight: 600;
     display: flex;
+    justify-content: center;
     align-items: center;
     gap: 8px;
     transition: var(--transition-fast);
+    width: 100%;
 }
 
 .btn-add:hover {
@@ -112,8 +126,46 @@ select {
     transform: translateY(-1px);
 }
 
-.btn-add:active {
-    transform: translateY(0);
+/* Controls (Sidebar) */
+.controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: auto;
+    /* Push to bottom of sidebar if space permits */
+}
+
+.btn-sort {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: var(--radius-sm);
+    transition: var(--transition-fast);
+    width: 100%;
+}
+
+.btn-sort:hover {
+    background: #fff;
+    color: var(--color-primary);
+}
+
+.btn-sort.active {
+    background: #e0e7ff;
+    color: var(--color-primary);
+}
+
+/* Main Content (Right Panel) */
+.main-content {
+    flex: 1;
+    padding: 2rem;
+    overflow-y: auto;
+    /* Internal Scroll */
+    background: transparent;
 }
 
 /* List Styles */
@@ -121,22 +173,28 @@ select {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    max-width: 800px;
+    /* Limit width for readability */
+    margin: 0 auto;
 }
 
 .todo-item {
     display: flex;
     align-items: center;
     gap: 16px;
-    padding: 16px;
-    background: rgba(255, 255, 255, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    border-radius: var(--radius-sm);
-    transition: var(--transition-fast);
+    padding: 16px 20px;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(4px);
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 
 .todo-item:hover {
-    background: rgba(255, 255, 255, 0.9);
-    transform: translateX(4px);
+    background: rgba(255, 255, 255, 0.95);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
 }
 
 .todo-item.completed {
@@ -151,7 +209,7 @@ select {
 
 .todo-text {
     flex: 1;
-    font-size: 1rem;
+    font-size: 1.05rem;
     font-weight: 500;
 }
 
@@ -183,7 +241,7 @@ select {
     color: var(--text-muted);
     opacity: 0;
     transition: var(--transition-fast);
-    padding: 6px;
+    padding: 8px;
     border-radius: 6px;
 }
 
@@ -213,128 +271,75 @@ select {
     border-color: var(--color-primary);
 }
 
-/* Controls */
-.controls {
-    display: flex;
-    justify-content: flex-end;
-    gap: 8px;
-    margin-bottom: 1rem;
-}
-
-.btn-sort {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--text-muted);
-    padding: 8px 12px;
-    background: rgba(255, 255, 255, 0.5);
-    border-radius: var(--radius-sm);
-    transition: var(--transition-fast);
-}
-
-.btn-sort:hover {
-    background: #fff;
-    color: var(--color-primary);
-}
-
-.btn-sort.active {
-    background: #e0e7ff;
-    color: var(--color-primary);
-}
-
-/* Progress Bar */
-.progress-container {
-    padding: 1rem 1.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    margin-bottom: 24px;
-}
-
-.progress-info {
-    display: flex;
-    justify-content: space-between;
-    font-weight: 600;
-    color: var(--color-primary);
-    font-size: 0.95rem;
-}
-
-.progress-bar-track {
-    width: 100%;
-    height: 10px;
-    background: rgba(0, 0, 0, 0.05);
-    border-radius: 10px;
-    overflow: hidden;
-}
-
-.progress-bar-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
-    border-radius: 10px;
-    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.progress-stats {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    text-align: right;
-    margin-top: 2px;
-}
-
 /* Mobile Responsiveness */
-@media (max-width: 640px) {
-    .container {
-        padding: 20px 16px;
-        gap: 1.5rem;
+@media (max-width: 768px) {
+    .dashboard-layout {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        min-width: auto;
+        height: auto;
+        padding: 1rem;
+        border-right: none;
+        border-bottom: 1px solid var(--glass-border);
+        background: rgba(255, 255, 255, 0.85);
+        /* More opaque */
+
+        /* Sticky Header Logic */
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        max-height: 40vh;
+        /* Limit height */
+        overflow-y: auto;
+        gap: 1rem;
     }
 
     .app-title {
-        font-size: 2rem;
+        font-size: 1.5rem;
+        text-align: center;
     }
 
-    /* Stack form elements on mobile for easy typing */
     .input-group {
-        flex-direction: column;
-        gap: 12px;
-        padding: 12px;
+        padding: 10px;
+        flex-direction: row;
+        /* Horizontal on mobile to save space */
+        flex-wrap: wrap;
     }
 
     .todo-input {
-        width: 100%;
-        padding: 12px;
-        font-size: 16px;
-        /* Prevents iOS zooom */
+        flex: 1;
+        min-width: 150px;
     }
 
     .select-urgency {
-        width: 100%;
-        padding: 12px;
-        font-size: 16px;
+        width: auto;
+        flex: 1;
     }
 
     .btn-add {
-        width: 100%;
-        justify-content: center;
-        padding: 12px;
-        font-size: 16px;
+        width: auto;
+        padding: 10px 20px;
     }
 
-    /* Stack controls/buttons */
     .controls {
-        flex-wrap: wrap;
-        justify-content: center;
+        flex-direction: row;
+        overflow-x: auto;
+        padding-bottom: 4px;
+        /* Space for scrollbar */
     }
 
     .btn-sort {
-        flex: 1 1 auto;
-        justify-content: center;
-        padding: 10px;
-        min-width: 120px;
+        white-space: nowrap;
+        padding: 8px 12px;
+        font-size: 0.8rem;
     }
 
-    .glass-card {
-        padding: 1.5rem;
+    .main-content {
+        padding: 1rem;
+        padding-bottom: 80px;
+        /* Space for bottom scroll */
     }
 }

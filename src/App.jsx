@@ -3,7 +3,7 @@ import { LayoutList, ArrowUpDown, Trash2, CheckCircle2, LogOut } from 'lucide-re
 import { supabase } from './supabaseClient';
 import TodoForm from './components/TodoForm';
 import TodoList from './components/TodoList';
-import ProgressBar from './components/ProgressBar';
+
 import Auth from './components/Auth';
 
 function App() {
@@ -108,70 +108,75 @@ function App() {
   }
 
   return (
-    <div className="container">
-      <header className="app-header">
-        <h1 className="app-title">Mi Agenda</h1>
-        <p style={{ color: 'var(--text-muted)' }}>
-          Nube: {session.user.email}
+    <div className="dashboard-layout">
+      {/* LEFT SIDEBAR: Fixed Controls */}
+      <aside className="sidebar">
+        <header className="app-header">
+          <h1 className="app-title">Mi Agenda</h1>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+            {session.user.email}
+            <button
+              onClick={() => supabase.auth.signOut()}
+              style={{ marginLeft: '8px', verticalAlign: 'middle', color: 'var(--urgency-high)' }}
+              title="Cerrar Sessión"
+            >
+              <LogOut size={14} />
+            </button>
+          </p>
+        </header>
+
+        <TodoForm onAdd={addTodo} />
+
+        <div className="controls">
           <button
-            onClick={() => supabase.auth.signOut()}
-            style={{ marginLeft: '10px', verticalAlign: 'middle', color: 'var(--urgency-high)' }}
-            title="Cerrar Sessión"
+            className={`btn-sort ${sortBy === 'urgency' ? 'active' : ''}`}
+            onClick={() => setSortBy('urgency')}
           >
-            <LogOut size={16} />
+            <LayoutList size={18} />
+            Por Urgencia
           </button>
-        </p>
-      </header>
+          <button
+            className={`btn-sort ${sortBy === 'time' ? 'active' : ''}`}
+            onClick={() => setSortBy('time')}
+          >
+            <ArrowUpDown size={18} />
+            Por Fecha
+          </button>
 
-      <ProgressBar todos={todos} />
+          {todos.length > 0 && (
+            <>
+              <div style={{ borderTop: '1px solid #e2e8f0', margin: '8px 0' }}></div>
+              <button
+                className="btn-sort"
+                onClick={deleteCompleted}
+                title="Eliminar tareas terminadas"
+              >
+                <CheckCircle2 size={18} />
+                Limpiar Completadas
+              </button>
 
-      <TodoForm onAdd={addTodo} />
+              <button
+                className="btn-sort"
+                onClick={deleteAll}
+                style={{ color: 'var(--urgency-high)' }}
+                title="Eliminar absolutamente todo"
+              >
+                <Trash2 size={18} />
+                Borrar Todo
+              </button>
+            </>
+          )}
+        </div>
+      </aside>
 
-      <div className="controls">
-        {todos.length > 0 && (
-          <>
-            <button
-              className="btn-sort"
-              onClick={deleteCompleted}
-              title="Eliminar tareas terminadas"
-            >
-              <CheckCircle2 size={16} />
-              Borrar Completadas
-            </button>
-
-            <button
-              className="btn-sort"
-              onClick={deleteAll}
-              style={{ color: 'var(--urgency-high)', borderColor: 'var(--urgency-high)', marginRight: 'auto' }}
-              title="Eliminar absolutamente todo"
-            >
-              <Trash2 size={16} />
-              Borrar Todo
-            </button>
-          </>
-        )}
-
-        <button
-          className={`btn-sort ${sortBy === 'urgency' ? 'active' : ''}`}
-          onClick={() => setSortBy('urgency')}
-        >
-          <LayoutList size={16} />
-          Por Urgencia
-        </button>
-        <button
-          className={`btn-sort ${sortBy === 'time' ? 'active' : ''}`}
-          onClick={() => setSortBy('time')}
-        >
-          <ArrowUpDown size={16} />
-          Por Fecha
-        </button>
-      </div>
-
-      <TodoList
-        todos={getSortedTodos()}
-        onToggle={toggleTodo}
-        onDelete={deleteTodo}
-      />
+      {/* RIGHT MAIN: Scrollable List */}
+      <main className="main-content">
+        <TodoList
+          todos={getSortedTodos()}
+          onToggle={toggleTodo}
+          onDelete={deleteTodo}
+        />
+      </main>
     </div >
   );
 }
