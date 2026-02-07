@@ -55,4 +55,4 @@ Esta aplicación fue construida utilizando las herramientas más modernas del de
 *   `src/App.jsx`: El componente principal que contiene la lógica de negocio (CRUD, ordenamiento).
 
 ---
-Desarrollado por Alejandro Estrada Padilla.
+Desarrollado por Alejandro Estrada Padilla. 2025.
