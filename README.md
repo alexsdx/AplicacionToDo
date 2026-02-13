@@ -14,8 +14,8 @@ Una aplicación web moderna y elegante para gestionar tus tareas diarias, diseñ
 *   **Interacciones Avanzadas**:
     *   ✨ **Edición Directa**: Haz clic en cualquier texto para editarlo al instante.
     *   🔄 **Prioridad Dinámica**: Toca la etiqueta de urgencia para cambiarla cíclicamente.
-    *   👋 **Borrado Seguro**: Confirmación antes de eliminar para evitar accidentes.
-    *   🖐️ **Drag & Drop**: Arrastra y suelta tus tareas para ordenarlas manualmente.
+    *   👋 **Borrado Seguro**: Ventana de confirmación nativa antes de eliminar.
+    *   🖐️ **Drag & Drop**: Usa el icono de "Grip" (puntos) para arrastrar y reordenar sin bloquear el scroll en el celular.
 *   **Autenticación Segura**: Sistema de inicio de sesión privado con "Link Mágico" al correo electrónico.
 *   **Ordenamiento Inteligente**:
     *   📅 **Por Fecha**: Orden cronológico de creación.

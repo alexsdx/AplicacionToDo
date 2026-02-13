@@ -16,12 +16,12 @@ export default function SortableTodoItem(props) {
         transform: CSS.Transform.toString(transform),
         transition,
         opacity: isDragging ? 0.5 : 1,
-        touchAction: 'none', // Critical for mobile
+        // touchAction: 'none', // Moved to Handle in TodoItem
     };
 
     return (
-        <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-            <TodoItem {...props} />
+        <div ref={setNodeRef} style={style} {...attributes}>
+            <TodoItem {...props} dragHandleProps={listeners} />
         </div>
     );
 }

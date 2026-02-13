@@ -1,21 +1,14 @@
 import { useState } from 'react';
-import { Trash2, Check, X, AlertTriangle } from 'lucide-react';
+import { Trash2, Check, GripVertical } from 'lucide-react';
 
-export default function TodoItem({ todo, onToggle, onDelete, onUpdate }) {
+export default function TodoItem({ todo, onToggle, onDelete, onUpdate, dragHandleProps }) {
     const [isEditing, setIsEditing] = useState(false);
     const [editText, setEditText] = useState(todo.text);
-    const [showConfirm, setShowConfirm] = useState(false);
 
     const urgencyLabels = {
         high: 'Alta',
         medium: 'Media',
         low: 'Baja'
-    };
-
-    const urgencyColors = {
-        high: 'var(--urgency-high)',
-        medium: 'var(--urgency-medium)',
-        low: 'var(--urgency-low)'
     };
 
     // 1. Handle Text Edit
@@ -31,19 +24,38 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }) {
             setEditText(todo.text);
             setIsEditing(false);
         }
+        // STOP PROPAGATION of Space to prevent dnd-kit from triggering
+        if (e.key === ' ') {
+            e.stopPropagation();
+        }
     };
 
     // 2. Handle Priority Cycle (Low -> Medium -> High -> Low)
     const cyclePriority = (e) => {
-        e.stopPropagation(); // Prevent opening edit mode if badges overlap (unlikely but safe)
+        e.stopPropagation();
         const priorities = ['low', 'medium', 'high'];
         const currentIndex = priorities.indexOf(todo.urgency);
         const nextPriority = priorities[(currentIndex + 1) % 3];
         onUpdate(todo.id, { urgency: nextPriority });
     };
 
+    // 3. Handle Delete with Native Confirm
+    const handleDelete = () => {
+        if (window.confirm('¿Estás seguro de que quieres eliminar esta tarea?')) {
+            onDelete(todo.id);
+        }
+    };
+
     return (
         <div className={`todo-item ${todo.completed ? 'completed' : ''}`}>
+            {/* Drag Handle - Only this part initiates drag */}
+            <div
+                {...dragHandleProps}
+                className="drag-handle"
+                style={{ cursor: 'grab', touchAction: 'none', color: '#cbd5e1', display: 'flex', alignItems: 'center' }}
+            >
+                <GripVertical size={20} />
+            </div>
 
             {/* Checkbox */}
             <div
@@ -61,6 +73,8 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }) {
                     onChange={(e) => setEditText(e.target.value)}
                     onBlur={handleEdit}
                     onKeyDown={handleKeyDown}
+                    // Stop pointer down propagation to prevent dragging while editing (extra safety)
+                    onPointerDown={(e) => e.stopPropagation()}
                     className="todo-input"
                     autoFocus
                     style={{ flex: 1, marginRight: '8px' }}
@@ -85,35 +99,14 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }) {
                 {urgencyLabels[todo.urgency]}
             </span>
 
-            {/* Delete / Confirm Button */}
-            {showConfirm ? (
-                <div style={{ display: 'flex', gap: '4px' }}>
-                    <button
-                        className="btn-delete"
-                        onClick={() => onDelete(todo.id)}
-                        style={{ color: '#ef4444', opacity: 1, background: '#fee2e2' }}
-                        title="Confirmar eliminar"
-                    >
-                        <Trash2 size={18} />
-                    </button>
-                    <button
-                        className="btn-delete"
-                        onClick={() => setShowConfirm(false)}
-                        style={{ color: 'var(--text-muted)', opacity: 1 }}
-                        title="Cancelar"
-                    >
-                        <X size={18} />
-                    </button>
-                </div>
-            ) : (
-                <button
-                    className="btn-delete"
-                    onClick={() => setShowConfirm(true)}
-                    title="Eliminar tarea"
-                >
-                    <Trash2 size={18} />
-                </button>
-            )}
+            {/* Delete Button */}
+            <button
+                className="btn-delete"
+                onClick={handleDelete}
+                title="Eliminar tarea"
+            >
+                <Trash2 size={18} />
+            </button>
         </div>
     );
 }
