@@ -48,19 +48,12 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate, dragHandl
 
     return (
         <div className={`todo-item ${todo.completed ? 'completed' : ''}`}>
-            {/* Drag Handle - Only this part initiates drag */}
-            <div
-                {...dragHandleProps}
-                className="drag-handle"
-                style={{ cursor: 'grab', touchAction: 'none', color: '#cbd5e1', display: 'flex', alignItems: 'center' }}
-            >
-                <GripVertical size={20} />
-            </div>
 
             {/* Checkbox */}
             <div
                 className="checkbox"
                 onClick={() => onToggle(todo.id)}
+                style={{ flexShrink: 0 }} /* Prevent shrinking */
             >
                 {todo.completed && <Check size={16} strokeWidth={3} />}
             </div>
@@ -77,13 +70,14 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate, dragHandl
                     onPointerDown={(e) => e.stopPropagation()}
                     className="todo-input"
                     autoFocus
-                    style={{ flex: 1, marginRight: '8px' }}
+                    style={{ flex: 1, marginRight: '8px', minWidth: 0 }} /* minWidth 0 for flex text truncate */
                 />
             ) : (
                 <span
                     className="todo-text"
                     onClick={() => setIsEditing(true)}
                     title="Haz click para editar"
+                    style={{ wordBreak: 'break-word', minWidth: 0 }} /* Ensure text wraps */
                 >
                     {todo.text}
                 </span>
@@ -94,7 +88,7 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate, dragHandl
                 className={`urgency-badge urgency-${todo.urgency}`}
                 onClick={cyclePriority}
                 title="Click para cambiar prioridad"
-                style={{ cursor: 'pointer', userSelect: 'none' }}
+                style={{ cursor: 'pointer', userSelect: 'none', flexShrink: 0 }}
             >
                 {urgencyLabels[todo.urgency]}
             </span>
@@ -104,9 +98,27 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate, dragHandl
                 className="btn-delete"
                 onClick={handleDelete}
                 title="Eliminar tarea"
+                style={{ flexShrink: 0 }}
             >
                 <Trash2 size={18} />
             </button>
+
+            {/* Drag Handle - Moved to Right */}
+            <div
+                {...dragHandleProps}
+                className="drag-handle"
+                style={{
+                    cursor: 'grab',
+                    touchAction: 'none',
+                    color: '#cbd5e1',
+                    display: 'flex',
+                    alignItems: 'center',
+                    paddingLeft: '8px', /* Spacing from delete */
+                    flexShrink: 0
+                }}
+            >
+                <GripVertical size={20} />
+            </div>
         </div>
     );
 }
