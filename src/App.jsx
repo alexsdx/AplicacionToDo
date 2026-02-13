@@ -32,19 +32,58 @@ function App() {
     }
   }, [session])
 
+  // 0. Self-Healing: Fix legacy items with position 0
+  const checkAndFixPositions = async (todos) => {
+    const zeroPositionItems = todos.filter(t => t.position === 0 || t.position === null);
+
+    // If we have more than 1 item with position 0, we need to fix them
+    if (zeroPositionItems.length > 1) {
+      console.log('Detected legacy items. Fixing positions...');
+
+      // Sort by creation time (oldest first) to give them a natural order
+      const sortedByTime = [...todos].sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+
+      const updates = sortedByTime.map((todo, index) => ({
+        id: todo.id,
+        position: (index + 1) * 1000 // 1000, 2000, 3000...
+      }));
+
+      // Update locally immediately
+      setTodos(sortedByTime.map((t, i) => ({ ...t, position: (i + 1) * 1000 })));
+
+      // Update in Supabase (Batch update would be better, but loop is okay for now)
+      for (const update of updates) {
+        await supabase.from('todos').update({ position: update.position }).eq('id', update.id);
+      }
+    }
+  };
+
   const fetchTodos = async () => {
     const { data, error } = await supabase
       .from('todos')
       .select('*')
       .order('created_at', { ascending: false })
 
-    if (!error && data) setTodos(data)
+    if (!error && data) {
+      setTodos(data);
+      checkAndFixPositions(data);
+    }
   }
 
   const addTodo = async (text, urgency) => {
+    // Determine new position (Top of list = min position / 2)
+    const minPosition = todos.length > 0 ? Math.min(...todos.map(t => t.position || 0)) : 0;
+    const newPosition = minPosition > 0 ? minPosition / 2 : 1000;
+
     const { data, error } = await supabase
       .from('todos')
-      .insert([{ text, urgency, completed: false, user_id: session.user.id }])
+      .insert([{
+        text,
+        urgency,
+        completed: false,
+        user_id: session.user.id,
+        position: newPosition
+      }])
       .select()
 
     if (!error && data) {
@@ -103,35 +142,43 @@ function App() {
     const { active, over } = event;
 
     if (active.id !== over.id) {
-      setTodos((items) => {
-        const oldIndex = items.findIndex((i) => i.id === active.id);
-        const newIndex = items.findIndex((i) => i.id === over.id);
+      // CRITICAL: Calculate positions based on the VISUAL ORDER (sortedTodos), not the raw state order
+      const currentSortedItems = getSortedTodos();
 
-        const newItems = arrayMove(items, oldIndex, newIndex);
+      const oldIndex = currentSortedItems.findIndex((i) => i.id === active.id);
+      const newIndex = currentSortedItems.findIndex((i) => i.id === over.id);
 
-        // Calculate new position for Cloud Persistence
-        // We take the position of the neighbor items to calculate the new float position
-        const prevItem = newItems[newIndex - 1];
-        const nextItem = newItems[newIndex + 1];
+      // Create a copy of the raw todos to update state
+      const newTodos = [...todos];
+      const todoIndexInState = newTodos.findIndex(t => t.id === active.id);
 
-        let newPosition;
-        if (!prevItem && !nextItem) {
-          newPosition = 5000; // Only item
-        } else if (!prevItem) {
-          newPosition = nextItem.position / 2; // Moved to top
-        } else if (!nextItem) {
-          newPosition = prevItem.position + 10000; // Moved to bottom
-        } else {
-          newPosition = (prevItem.position + nextItem.position) / 2; // Between
-        }
+      // Calculate new position
+      // We look at the neighbors in the SORTED list
+      // Target is newIndex. 
+      // Prev item is newIndex - 1 (if moving down) or newIndex (if moving up? No, arrayMove handles index shift)
 
-        // Update in background
-        updateTodo(active.id, { position: newPosition }); // Persist to Cloud
+      // Let's simulate the move in the sorted array first to get neighbors
+      const simulatedList = arrayMove(currentSortedItems, oldIndex, newIndex);
+      const prevItem = simulatedList[newIndex - 1];
+      const nextItem = simulatedList[newIndex + 1];
 
-        // Optimistic update locally
-        newItems[newIndex].position = newPosition;
-        return newItems;
-      });
+      let newPosition;
+      if (!prevItem && !nextItem) {
+        newPosition = 1000;
+      } else if (!prevItem) {
+        newPosition = (nextItem.position || 0) / 2;
+      } else if (!nextItem) {
+        newPosition = (prevItem.position || 0) + 1000;
+      } else {
+        newPosition = ((prevItem.position || 0) + (nextItem.position || 0)) / 2;
+      }
+
+      // Update state
+      newTodos[todoIndexInState].position = newPosition;
+      setTodos(newTodos);
+
+      // Persist
+      updateTodo(active.id, { position: newPosition });
     }
   };
 
