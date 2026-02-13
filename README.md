@@ -11,6 +11,11 @@ Una aplicación web moderna y elegante para gestionar tus tareas diarias, diseñ
 *   **Niveles de Urgencia**: Clasifica tus pendientes como **Alta** (Rojo), **Media** (Ámbar) o **Baja** (Verde).
 *   **Persistencia en la Nube**: Tus tareas se guardan en **Supabase**, permitiendo sincronización real entre todos tus dispositivos.
 *   **Diseño Dashboard**: Interfaz de "Panel de Control" con barra lateral fija y lista scrolleable, optimizada para productividad.
+*   **Interacciones Avanzadas**:
+    *   ✨ **Edición Directa**: Haz clic en cualquier texto para editarlo al instante.
+    *   🔄 **Prioridad Dinámica**: Toca la etiqueta de urgencia para cambiarla cíclicamente.
+    *   👋 **Borrado Seguro**: Confirmación antes de eliminar para evitar accidentes.
+    *   🖐️ **Drag & Drop**: Arrastra y suelta tus tareas para ordenarlas manualmente.
 *   **Autenticación Segura**: Sistema de inicio de sesión privado con "Link Mágico" al correo electrónico.
 *   **Ordenamiento Inteligente**:
     *   📅 **Por Fecha**: Orden cronológico de creación.

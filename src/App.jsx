@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { LayoutList, ArrowUpDown, Trash2, CheckCircle2, LogOut } from 'lucide-react';
+import { LayoutList, ArrowUpDown, Trash2, CheckCircle2, LogOut, AlertTriangle } from 'lucide-react';
+import { arrayMove } from '@dnd-kit/sortable';
 import { supabase } from './supabaseClient';
 import TodoForm from './components/TodoForm';
 import TodoList from './components/TodoList';
@@ -9,7 +10,7 @@ import Auth from './components/Auth';
 function App() {
   const [session, setSession] = useState(null)
   const [todos, setTodos] = useState([]);
-  const [sortBy, setSortBy] = useState('urgency'); // 'urgency' | 'time'
+  const [sortBy, setSortBy] = useState('manual'); // 'manual' | 'urgency' | 'time'
 
   // 1. Manage Session State
   useEffect(() => {
@@ -86,19 +87,79 @@ function App() {
     }
   };
 
+  const updateTodo = async (id, updates) => {
+    const { error } = await supabase
+      .from('todos')
+      .update(updates)
+      .eq('id', id);
+
+    if (!error) {
+      setTodos(todos.map(t => (t.id === id ? { ...t, ...updates } : t)));
+    }
+  };
+
+  // 5. Handle Drag End
+  const handleDragEnd = async (event) => {
+    const { active, over } = event;
+
+    if (active.id !== over.id) {
+      setTodos((items) => {
+        const oldIndex = items.findIndex((i) => i.id === active.id);
+        const newIndex = items.findIndex((i) => i.id === over.id);
+
+        const newItems = arrayMove(items, oldIndex, newIndex);
+
+        // Calculate new position for Cloud Persistence
+        // We take the position of the neighbor items to calculate the new float position
+        const prevItem = newItems[newIndex - 1];
+        const nextItem = newItems[newIndex + 1];
+
+        let newPosition;
+        if (!prevItem && !nextItem) {
+          newPosition = 5000; // Only item
+        } else if (!prevItem) {
+          newPosition = nextItem.position / 2; // Moved to top
+        } else if (!nextItem) {
+          newPosition = prevItem.position + 10000; // Moved to bottom
+        } else {
+          newPosition = (prevItem.position + nextItem.position) / 2; // Between
+        }
+
+        // Update in background
+        updateTodo(active.id, { position: newPosition }); // Persist to Cloud
+
+        // Optimistic update locally
+        newItems[newIndex].position = newPosition;
+        return newItems;
+      });
+    }
+  };
+
   // Sorting Logic (Client side sorting is fine for small lists)
   const getSortedTodos = () => {
+    // If we are in 'manual' mode (which is default if we have positions), we sort by position
+    // But user can override with buttons
+
+    // For now, let's make 'manual' (position) the default sort
     const urgencyWeight = { high: 3, medium: 2, low: 1 };
 
     return [...todos].sort((a, b) => {
+      // 1. Completed items at bottom always
       if (a.completed !== b.completed) return a.completed ? 1 : -1;
 
+      // 2. Explicit User Sort overrides Position
       if (sortBy === 'urgency') {
         const diff = urgencyWeight[b.urgency] - urgencyWeight[a.urgency];
         if (diff !== 0) return diff;
       }
 
-      // Use string comparison for timestamps if needed, or Date
+      if (sortBy === 'time') {
+        return new Date(b.created_at) - new Date(a.created_at);
+      }
+
+      // 3. Default: Sort by Position (asc) -> Newest created as fallback
+      if (a.position !== b.position) return (a.position || 0) - (b.position || 0);
+
       return new Date(b.created_at) - new Date(a.created_at);
     });
   };
@@ -129,18 +190,27 @@ function App() {
 
         <div className="controls">
           <button
+            className={`btn-sort ${sortBy === 'manual' ? 'active' : ''}`}
+            onClick={() => setSortBy('manual')}
+            title="Orden Manual (Arrastrar y Soltar)"
+          >
+            <LayoutList size={18} />
+            Mi Orden
+          </button>
+
+          <button
             className={`btn-sort ${sortBy === 'urgency' ? 'active' : ''}`}
             onClick={() => setSortBy('urgency')}
           >
-            <LayoutList size={18} />
-            Por Urgencia
+            <AlertTriangle size={18} />
+            Urgencia
           </button>
           <button
             className={`btn-sort ${sortBy === 'time' ? 'active' : ''}`}
             onClick={() => setSortBy('time')}
           >
             <ArrowUpDown size={18} />
-            Por Fecha
+            Fecha
           </button>
 
           {todos.length > 0 && (
@@ -175,6 +245,8 @@ function App() {
           todos={getSortedTodos()}
           onToggle={toggleTodo}
           onDelete={deleteTodo}
+          onUpdate={updateTodo}
+          onDragEnd={handleDragEnd}
         />
       </main>
     </div >
